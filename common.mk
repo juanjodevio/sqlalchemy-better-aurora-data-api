@@ -15,7 +15,6 @@ release-patch:
 release:
 	@if ! git diff --cached --exit-code; then echo "Commit staged files before proceeding"; exit 1; fi
 	@if [[ -z $$TAG ]]; then echo "Use release-{major,minor,patch}"; exit 1; fi
-	@if ! type -P pandoc; then echo "Please install pandoc"; exit 1; fi
 	@if ! type -P sponge; then echo "Please install moreutils"; exit 1; fi
 	@if ! type -P gh; then echo "Please install gh"; exit 1; fi
 	@if ! type -P twine; then echo "Please install twine"; exit 1; fi
@@ -27,8 +26,7 @@ release:
 	    echo "# Changes for ${TAG} ($$(date +%Y-%m-%d))" > $$TAG_MSG; \
 	    git log --pretty=format:%s $$(git describe --abbrev=0)..HEAD >> $$TAG_MSG; \
 	    $${EDITOR:-emacs} $$TAG_MSG; \
-	    if [[ -f Changes.md ]]; then cat $$TAG_MSG <(echo) Changes.md | sponge Changes.md; git add Changes.md; fi; \
-	    if [[ -f Changes.rst ]]; then cat <(pandoc --from markdown --to rst $$TAG_MSG) <(echo) Changes.rst | sponge Changes.rst; git add Changes.rst; fi; \
+	    if [[ -f CHANGES.md ]]; then cat $$TAG_MSG <(echo) CHANGES.md | sponge CHANGES.md; git add CHANGES.md; fi; \
 	    git commit -m ${TAG}; \
 	    git tag --annotate --file $$TAG_MSG ${TAG}
 	git push --follow-tags
