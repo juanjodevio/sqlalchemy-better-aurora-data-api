@@ -1,5 +1,7 @@
 # sqlalchemy-better-aurora-data-api - An AWS Aurora Serverless Data API dialect for SQLAlchemy
 
+![Python 3.11 | 3.12 | 3.13 | 3.14 | 3.15](https://img.shields.io/static/v1?label=Python&message=3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14%20%7C%203.15&color=blue)
+
 ## Context
 
 This package is the [SQLAlchemy](https://www.sqlalchemy.org) dialect for the
