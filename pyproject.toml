@@ -37,7 +37,10 @@ Origin = "https://github.com/chanzuckerberg/sqlalchemy-aurora-data-api"
 "postgresql.auroradataapi" = "sqlalchemy_better_aurora_data_api:AuroraPostgresDataAPIDialect"
 
 [dependency-groups]
-dev = ["ruff==0.1.9"]
+dev = [
+    "pytest==9.2.0",
+    "ruff==0.1.9",
+]
 docs = [
     "guzzle-sphinx-theme",
     "myst-parser",
