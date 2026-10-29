@@ -45,11 +45,12 @@ docs = [
 ]
 
 [build-system]
-requires = ["setuptools>=77"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
 
-[tool.setuptools]
-packages = ["sqlalchemy_better_aurora_data_api"]
+[tool.uv.build-backend]
+module-name = "sqlalchemy_better_aurora_data_api"
+module-root = ""
 
 [tool.ruff]
 line-length = 120
