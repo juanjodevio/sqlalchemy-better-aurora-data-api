@@ -1,21 +1,21 @@
 SHELL=/bin/bash
 
 lint:
-	ruff .
+	uv run ruff check .
 
 test: lint
-	python ./test/test.py -v
+	uv run python ./test/test.py -v
 
 init_docs:
-	cd docs; sphinx-quickstart
+	uv run --group docs sphinx-quickstart docs
 
 docs:
-	sphinx-build docs docs/html
+	uv run --group docs sphinx-build docs docs/html
 
 install:
 	-rm -rf dist
-	python -m build
-	pip install --upgrade dist/*.whl
+	uv build
+	uv pip install --system --upgrade dist/*.whl
 
 .PHONY: test release docs
 

@@ -1,6 +1,6 @@
 ---
 name: All issues
-about: All sqlalchemy-aurora-data-api issues
+about: All sqlalchemy-better-aurora-data-api issues
 title: ''
 labels: ''
 assignees: ''
@@ -9,7 +9,7 @@ assignees: ''
 
 <!--
 
-Thank you for your interest in sqlalchemy-aurora-data-api. If you want to report an issue or make a feature request, you are in the right place. Please keep the following in mind:
+Thank you for your interest in sqlalchemy-better-aurora-data-api. If you want to report an issue or make a feature request, you are in the right place. Please keep the following in mind:
 
 - This project is staffed by volunteers who work on it in their limited spare time. Please respect the volunteers' time and effort by being courteous and kind. Users who abuse the goodwill of the volunteers will be removed from the project and barred from making further comments.
 - This project provides an interface between open-source community-maintained software and commercial software. If your commercial enterprise requires the use of this software, it is provided to you as a courtesy in the hope of enriching the greater software community. The volunteers who maintain it are under no obligation to provide support to you; and moreover, it is your enterprise's moral obligation to support the maintainers. You can do so via the GitHub "Sponsor" button located at the top of GitHub's pages for this project.

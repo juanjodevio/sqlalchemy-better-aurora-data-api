@@ -27,7 +27,7 @@ from sqlalchemy.sql import text
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from sqlalchemy_aurora_data_api import register_dialects, _ADA_TIMESTAMP  # noqa
+from sqlalchemy_better_aurora_data_api import register_dialects, _ADA_TIMESTAMP  # noqa
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("aurora_data_api").setLevel(logging.DEBUG)
@@ -121,7 +121,7 @@ class Socks(enum.Enum):
 
 
 class BasicUser(BasicBase):
-    __tablename__ = "sqlalchemy_aurora_data_api_testI"
+    __tablename__ = "sqlalchemy_better_aurora_data_api_testI"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64))
@@ -133,7 +133,7 @@ class BasicUser(BasicBase):
 
 
 class User(Base):
-    __tablename__ = "sqlalchemy_aurora_data_api_testJ"
+    __tablename__ = "sqlalchemy_better_aurora_data_api_testJ"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     fullname = Column(String)
