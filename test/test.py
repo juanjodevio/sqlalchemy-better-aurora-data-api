@@ -268,7 +268,7 @@ class TestAuroraDataAPIMySQLDialect(TestAuroraDataAPI):
 
     def test_execute(self):
         with self.engine.connect() as conn:
-            for result in conn.execute("select * from information_schema.tables"):
+            for result in conn.execute(text("select * from information_schema.tables")):
                 print(result)
 
     def test_orm(self):

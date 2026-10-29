@@ -74,6 +74,70 @@ def test_enum_in_list_compiles_to_one_cast_per_value():
 
     assert len(re.findall(r"CAST\(.*? AS socks\)", compiled)) == 2 and "CAST((" not in compiled, compiled
 
+
+def test_package_depends_on_sqlalchemy_2_and_the_lock_resolves_2_1_6():
+    with (_ROOT / "pyproject.toml").open("rb") as project_file:
+        dependencies = tomllib.load(project_file)["project"]["dependencies"]
+    with (_ROOT / "uv.lock").open("rb") as lock_file:
+        packages = tomllib.load(lock_file)["package"]
+
+    project = next(package for package in packages if package["name"] == "sqlalchemy-better-aurora-data-api")
+    sqlalchemy = next(package for package in packages if package["name"] == "sqlalchemy")
+    requirement = next(item for item in project["metadata"]["requires-dist"] if item["name"] == "sqlalchemy")
+
+    assert "sqlalchemy>=2,<3" in dependencies
+    assert requirement.get("specifier") == ">=2,<3"
+    assert sqlalchemy["version"] == "2.1.6"
+
+
+def test_readme_prerequisites_require_sqlalchemy_2():
+    readme = (_ROOT / "README.md").read_text()
+    _before, _marker, rest = readme.partition("## Prerequisites")
+    section, _next_marker, _after = rest.partition("\n## ")
+
+    assert "This package requires SQLAlchemy >= 2 and < 3." in section
+
+
+def test_readme_quickstart_imports_text_and_executes_it():
+    readme = (_ROOT / "README.md").read_text()
+    _before, _marker, rest = readme.partition("## Usage")
+    section, _next_marker, _after = rest.partition("\n## ")
+
+    assert "from sqlalchemy import create_engine, text" in section
+    assert 'conn.execute(text("select * from pg_catalog.pg_tables"))' in section
+
+
+def test_readme_connect_args_link_points_at_sqlalchemy_2_docs():
+    readme = (_ROOT / "README.md").read_text()
+
+    assert "[`connect_args`](https://docs.sqlalchemy.org/en/20/core/engines.html#custom-dbapi-args)" in readme
+
+
+def test_mysql_and_postgresql_dialect_comments_cite_sqlalchemy_2_internals():
+    source = (_ROOT / "sqlalchemy_better_aurora_data_api" / "__init__.py").read_text()
+    mysql = source.split("class AuroraMySQLDataAPIDialect", 1)[1].split("class AuroraPostgresDataAPIDialect", 1)[0]
+    postgres = source.split("class AuroraPostgresDataAPIDialect", 1)[1].split("def register_dialects", 1)[0]
+    url = "https://docs.sqlalchemy.org/en/20/core/internals.html#sqlalchemy.engine.interfaces.Dialect"
+
+    assert url in mysql
+    assert url in postgres
+    assert "en/13/core/internals.html" not in mysql
+    assert "en/13/core/internals.html" not in postgres
+
+
+def test_mysql_live_example_executes_text():
+    source = (_ROOT / "test" / "test.py").read_text()
+    mysql = source.split("class TestAuroraDataAPIMySQLDialect", 1)[1]
+
+    assert 'conn.execute(text("select * from information_schema.tables"))' in mysql
+
+
+def test_ci_runs_offline_tests_without_a_sqlalchemy_version_matrix():
+    workflow = (_ROOT / ".github" / "workflows" / "ci.yml").read_text()
+
+    assert "uv run pytest test/test_offline.py" in workflow
+    assert "sqlalchemy" not in workflow
+
 def test_classifiers_readme_label_and_ci_matrix_list_the_declared_python_versions():
     declared = ("3.11", "3.12", "3.13", "3.14", "3.15")
 

@@ -142,7 +142,7 @@ class _ADA_ARRAY(ARRAY):
 
 
 class AuroraMySQLDataAPIDialect(MySQLDialect):
-    # See https://docs.sqlalchemy.org/en/13/core/internals.html#sqlalchemy.engine.interfaces.Dialect
+    # See https://docs.sqlalchemy.org/en/20/core/internals.html#sqlalchemy.engine.interfaces.Dialect
     driver = "aurora_data_api"
     default_schema_name = None
     supports_native_decimal = True
@@ -168,7 +168,7 @@ class AuroraMySQLDataAPIDialect(MySQLDialect):
 
 
 class AuroraPostgresDataAPIDialect(PGDialect):
-    # See https://docs.sqlalchemy.org/en/13/core/internals.html#sqlalchemy.engine.interfaces.Dialect
+    # See https://docs.sqlalchemy.org/en/20/core/internals.html#sqlalchemy.engine.interfaces.Dialect
     driver = "aurora_data_api"
     default_schema_name = None
     colspecs = util.update_copy(
