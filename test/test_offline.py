@@ -1,5 +1,6 @@
 import datetime
 
+import pytest
 from sqlalchemy import create_engine
 
 from sqlalchemy_better_aurora_data_api import (
@@ -9,17 +10,18 @@ from sqlalchemy_better_aurora_data_api import (
 )
 
 
-def test_postgresql_dialect_url_resolves_to_the_postgresql_dialect():
-    engine = create_engine("postgresql+auroradataapi://:@/offline")
+@pytest.mark.parametrize(
+    ("url", "dialect_class"),
+    [
+        ("postgresql+auroradataapi://:@/offline", AuroraPostgresDataAPIDialect),
+        ("mysql+auroradataapi://:@/offline", AuroraMySQLDataAPIDialect),
+    ],
+    ids=["PostgreSQL dialect", "MySQL dialect"],
+)
+def test_url_resolves_to_the_postgresql_dialect_and_the_mysql_dialect(url, dialect_class):
+    engine = create_engine(url)
 
-    assert type(engine.dialect) is AuroraPostgresDataAPIDialect
-    assert engine.dialect.driver == "aurora_data_api"
-
-
-def test_mysql_dialect_url_resolves_to_the_mysql_dialect():
-    engine = create_engine("mysql+auroradataapi://:@/offline")
-
-    assert type(engine.dialect) is AuroraMySQLDataAPIDialect
+    assert type(engine.dialect) is dialect_class
     assert engine.dialect.driver == "aurora_data_api"
 
 
