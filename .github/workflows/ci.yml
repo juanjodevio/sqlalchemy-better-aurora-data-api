@@ -18,20 +18,15 @@ concurrency:
 jobs:
   ruff:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v10.3.3
-        with:
-          python-version: "3.15"
-      - run: uv python install 3.15
-      - run: uv sync --frozen
-      - run: uv run ruff check
-      - run: uv run ruff format --check
+    uses: ./.github/workflows/setup.yml
+    with:
+      python-version: "3.15"
+      command: |
+        uv run ruff check
+        uv run ruff format --check
 
   test:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -41,11 +36,7 @@ jobs:
           - "3.13"
           - "3.14"
           - "3.15"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v10.3.3
-        with:
-          python-version: ${{ matrix.python-version }}
-      - run: uv python install ${{ matrix.python-version }}
-      - run: uv sync --frozen
-      - run: uv run pytest test/test_offline.py
+    uses: ./.github/workflows/setup.yml
+    with:
+      python-version: ${{ matrix.python-version }}
+      command: uv run pytest test/test_offline.py

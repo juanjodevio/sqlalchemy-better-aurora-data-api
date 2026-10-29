@@ -1,0 +1,31 @@
+name: Setup
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: CPython version for this job
+        required: true
+        type: string
+      command:
+        description: Command to run after the frozen install
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      UV_PYTHON_PREFERENCE: only-managed
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: ${{ inputs.python-version }}
+      - run: uv sync --frozen
+      - env:
+          COMMAND: ${{ inputs.command }}
+        run: bash -euo pipefail -c "$COMMAND"
