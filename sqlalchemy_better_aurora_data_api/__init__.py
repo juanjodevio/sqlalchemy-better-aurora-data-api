@@ -161,7 +161,7 @@ class AuroraMySQLDataAPIDialect(MySQLDialect):
         return aurora_data_api
 
     def _detect_charset(self, connection):
-        return connection.execute("SHOW VARIABLES LIKE 'character_set_client'").fetchone()[1]
+        return connection.exec_driver_sql("SHOW VARIABLES LIKE 'character_set_client'").fetchone()[1]
 
     def _extract_error_code(self, exception):
         return exception.args[0].value

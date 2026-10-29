@@ -37,6 +37,31 @@ def test_timestamp_microsecond_padding():
     assert processor("2019-10-31 09:37:17.3186") == datetime.datetime.fromisoformat("2019-10-31 09:37:17.318600")
 
 
+def test_mysql_dialect_charset_probe_returns_the_client_charset():
+    class _StandInConnection:
+        def __init__(self):
+            self.sql = None
+
+        def exec_driver_sql(self, sql):
+            self.sql = sql
+            row = ("character_set_client", "utf8mb4")
+
+            class _Row:
+                def fetchone(self):
+                    return row
+
+            return _Row()
+
+    connection = _StandInConnection()
+
+    charset = AuroraMySQLDataAPIDialect()._detect_charset(connection)
+
+    assert (connection.sql, charset) == (
+        "SHOW VARIABLES LIKE 'character_set_client'",
+        "utf8mb4",
+    )
+
+
 def test_classifiers_readme_label_and_ci_matrix_list_the_declared_python_versions():
     declared = ("3.11", "3.12", "3.13", "3.14", "3.15")
 
