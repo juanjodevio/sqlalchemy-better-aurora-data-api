@@ -14,6 +14,7 @@ __pycache__/
 
 # Sphinx documentation
 /docs/_build/
+/docs/superpowers/
 
 # IDE project files
 /.pydevproject
