@@ -62,6 +62,14 @@ def test_postgresql_schema_name_is_compiled_into_the_sql():
     assert "search_path" not in select_on_table
 
 
+def test_readme_states_the_postgresql_schema_contract():
+    readme = (_ROOT / "README.md").read_text()
+
+    assert "A PostgreSQL schema is a namespace inside a Database." in readme
+    assert "Set it on the table or the metadata." in readme
+    assert "The URL path remains the Database." in readme
+
+
 def test_timestamp_microsecond_padding():
     processor = _ADA_TIMESTAMP.result_processor(_ADA_TIMESTAMP, None, None)
 
