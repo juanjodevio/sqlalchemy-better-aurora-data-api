@@ -15,13 +15,15 @@ release-patch:
 release:
 	@if ! git diff --cached --exit-code; then echo "Commit staged files before proceeding"; exit 1; fi
 	@if [[ -z $$TAG ]]; then echo "Use release-{major,minor,patch}"; exit 1; fi
+	@if ! type -P uv; then echo "Please install uv"; exit 1; fi
 	@if ! type -P sponge; then echo "Please install moreutils"; exit 1; fi
 	@if ! type -P gh; then echo "Please install gh"; exit 1; fi
 	@if ! type -P twine; then echo "Please install twine"; exit 1; fi
 	git pull
-	git clean -x --force $$(python setup.py --name)
-	sed -i -e "s/version=\([\'\"]\)[0-9]*\.[0-9]*\.[0-9]*/version=\1$${TAG:1}/" setup.py
-	git add setup.py
+	git clean -x --force sqlalchemy_aurora_data_api
+	sed -i -e "s/^version = \"[0-9]*\.[0-9]*\.[0-9]*\"/version = \"$${TAG:1}\"/" pyproject.toml
+	uv lock
+	git add pyproject.toml uv.lock
 	TAG_MSG=$$(mktemp); \
 	    echo "# Changes for ${TAG} ($$(date +%Y-%m-%d))" > $$TAG_MSG; \
 	    git log --pretty=format:%s $$(git describe --abbrev=0)..HEAD >> $$TAG_MSG; \
@@ -36,7 +38,7 @@ release:
 	$(MAKE) release-docs
 
 release-pypi:
-	python -m build
+	uv build
 	twine upload dist/*.tar.gz dist/*.whl --verbose
 
 release-docs:
