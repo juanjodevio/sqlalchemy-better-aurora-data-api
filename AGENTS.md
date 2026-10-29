@@ -11,7 +11,3 @@ Canonical roles use same-named labels: `needs-triage`, `needs-info`, `ready-for-
 ### Domain docs
 
 Single-context: root `GLOSSARY.md` and `docs/adr/`. See `docs/agents/domain.md`.
-
-### Python
-
-Before writing or editing Python, read `CODING_STANDARD.md`.
