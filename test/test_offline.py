@@ -134,6 +134,7 @@ def test_ci_runs_offline_tests_without_a_sqlalchemy_version_matrix():
     assert "uv run pytest test/test_offline.py" in workflow
     assert _ci_test_job_matrix_axes() == ("python-version",)
 
+
 def test_classifiers_readme_label_and_ci_matrix_list_the_declared_python_versions():
     declared = ("3.11", "3.12", "3.13", "3.14", "3.15")
 
