@@ -18,15 +18,16 @@
 sqlalchemy-better-aurora-data-api
 """
 
-import json, datetime, re
-
-from sqlalchemy import cast, func, util
-import sqlalchemy.sql.sqltypes as sqltypes
-from sqlalchemy.dialects.postgresql.base import PGDialect
-from sqlalchemy.dialects.postgresql import JSON, JSONB, UUID, DATE, TIME, TIMESTAMP, ARRAY, ENUM
-from sqlalchemy.dialects.mysql.base import MySQLDialect
+import datetime
+import json
+import re
 
 import aurora_data_api
+import sqlalchemy.sql.sqltypes as sqltypes
+from sqlalchemy import cast, func, util
+from sqlalchemy.dialects.mysql.base import MySQLDialect
+from sqlalchemy.dialects.postgresql import ARRAY, DATE, ENUM, JSON, JSONB, TIME, TIMESTAMP, UUID
+from sqlalchemy.dialects.postgresql.base import PGDialect
 
 
 class _ADA_SA_JSON(sqltypes.JSON):
