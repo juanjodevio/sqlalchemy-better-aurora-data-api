@@ -19,3 +19,7 @@ Before writing or editing Python, read `CODING_STANDARD.md`.
 ### Checks
 
 `make lint` is local. `make test` continues into live Aurora Data API calls and needs `AURORA_CLUSTER_ARN` (the Cluster) and `AURORA_SECRET_ARN` (the Secret).
+
+### Coding standard
+
+When writing or editing Python, read `CODING_STANDARDS.md`.
