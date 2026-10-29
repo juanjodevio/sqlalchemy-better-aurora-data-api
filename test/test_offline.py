@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import Column, Enum, create_engine
 
 from sqlalchemy_better_aurora_data_api import (
     _ADA_TIMESTAMP,
@@ -61,6 +61,18 @@ def test_mysql_dialect_charset_probe_returns_the_client_charset():
         "utf8mb4",
     )
 
+
+def test_enum_in_list_compiles_to_one_cast_per_value():
+    column = Column("color", Enum("red", "green", name="socks"))
+
+    compiled = str(
+        column.in_(["red", "green"]).compile(
+            dialect=AuroraPostgresDataAPIDialect(),
+            compile_kwargs={"render_postcompile": True},
+        )
+    )
+
+    assert len(re.findall(r"CAST\(.*? AS socks\)", compiled)) == 2 and "CAST((" not in compiled, compiled
 
 def test_classifiers_readme_label_and_ci_matrix_list_the_declared_python_versions():
     declared = ("3.11", "3.12", "3.13", "3.14", "3.15")
