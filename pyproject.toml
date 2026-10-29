@@ -8,6 +8,7 @@ license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.8"
 authors = [
     { name = "Andrey Kislyuk", email = "kislyuk@gmail.com" },
+    { name = "juanjodevio" },
 ]
 classifiers = [
     "Intended Audience :: Developers",
