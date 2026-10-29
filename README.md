@@ -29,6 +29,8 @@ pip install sqlalchemy-better-aurora-data-api
 
 ## Prerequisites
 
+* This package requires SQLAlchemy >= 2 and < 3.
+
 * Set up an
   [AWS Aurora Serverless cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
   and enable the Aurora Data API for it. If you have previously set up an Aurora Serverless cluster, you can enable the Aurora Data API
@@ -68,7 +70,7 @@ aws rds-data execute-statement --resource-arn RESOURCE_ARN --secret-arn SECRET_A
 ## Usage
 
 Pass the Cluster ARN and the Secret ARN as
-`sqlalchemy.create_engine()` [`connect_args`](https://docs.sqlalchemy.org/en/13/core/engines.html#custom-dbapi-args).
+`sqlalchemy.create_engine()` [`connect_args`](https://docs.sqlalchemy.org/en/20/core/engines.html#custom-dbapi-args).
 The Database name is the URL path (`my_db_name` in the example below). Every other part of the URL is ignored.
 
 * `aurora_cluster_arn` is the Cluster ARN. The
@@ -78,7 +80,7 @@ The Database name is the URL path (`my_db_name` in the example below). Every oth
 * `secret_arn` is the Secret ARN. If omitted here, `AURORA_SECRET_ARN` is used.
 
 ```python
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 cluster_arn = "arn:aws:rds:us-east-1:123456789012:cluster:my-aurora-serverless-cluster"
 secret_arn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:rds-db-credentials/MY_DB"
@@ -88,7 +90,7 @@ engine = create_engine('postgresql+auroradataapi://:@/my_db_name',
                        connect_args=dict(aurora_cluster_arn=cluster_arn, secret_arn=secret_arn))
 
 with engine.connect() as conn:
-    for result in conn.execute("select * from pg_catalog.pg_tables"):
+    for result in conn.execute(text("select * from pg_catalog.pg_tables")):
         print(result)
 ```
 

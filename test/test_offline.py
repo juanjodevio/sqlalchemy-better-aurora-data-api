@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import Column, Enum, create_engine
 
 from sqlalchemy_better_aurora_data_api import (
     _ADA_TIMESTAMP,
@@ -37,6 +37,104 @@ def test_timestamp_microsecond_padding():
     assert processor("2019-10-31 09:37:17.3186") == datetime.datetime.fromisoformat("2019-10-31 09:37:17.318600")
 
 
+def test_mysql_dialect_charset_probe_returns_the_client_charset():
+    class _StandInConnection:
+        def __init__(self):
+            self.sql = None
+
+        def exec_driver_sql(self, sql):
+            self.sql = sql
+            row = ("character_set_client", "utf8mb4")
+
+            class _Result:
+                def fetchone(self):
+                    return row
+
+            return _Result()
+
+    connection = _StandInConnection()
+
+    charset = AuroraMySQLDataAPIDialect()._detect_charset(connection)
+
+    assert (connection.sql, charset) == (
+        "SHOW VARIABLES LIKE 'character_set_client'",
+        "utf8mb4",
+    )
+
+
+def test_enum_in_list_compiles_to_one_cast_per_value():
+    column = Column("color", Enum("red", "green", name="socks"))
+
+    compiled = str(
+        column.in_(["red", "green"]).compile(
+            dialect=AuroraPostgresDataAPIDialect(),
+            compile_kwargs={"render_postcompile": True},
+        )
+    )
+
+    assert len(re.findall(r"CAST\(.*? AS socks\)", compiled)) == 2 and "CAST((" not in compiled, compiled
+
+
+def test_package_depends_on_sqlalchemy_2_and_the_lock_resolves_2_1_6():
+    with (_ROOT / "pyproject.toml").open("rb") as project_file:
+        dependencies = tomllib.load(project_file)["project"]["dependencies"]
+    with (_ROOT / "uv.lock").open("rb") as lock_file:
+        packages = tomllib.load(lock_file)["package"]
+
+    project = next(package for package in packages if package["name"] == "sqlalchemy-better-aurora-data-api")
+    sqlalchemy = next(package for package in packages if package["name"] == "sqlalchemy")
+    requirement = next(item for item in project["metadata"]["requires-dist"] if item["name"] == "sqlalchemy")
+
+    assert "sqlalchemy>=2,<3" in dependencies
+    assert requirement.get("specifier") == ">=2,<3"
+    assert sqlalchemy["version"] == "2.1.6"
+
+
+def test_readme_prerequisites_require_sqlalchemy_2():
+    section = _readme_section("## Prerequisites")
+
+    assert "This package requires SQLAlchemy >= 2 and < 3." in section
+
+
+def test_readme_quickstart_imports_text_and_executes_it():
+    section = _readme_section("## Usage")
+
+    assert "from sqlalchemy import create_engine, text" in section
+    assert 'conn.execute(text("select * from pg_catalog.pg_tables"))' in section
+
+
+def test_readme_connect_args_link_points_at_sqlalchemy_2_docs():
+    readme = (_ROOT / "README.md").read_text()
+
+    assert "[`connect_args`](https://docs.sqlalchemy.org/en/20/core/engines.html#custom-dbapi-args)" in readme
+
+
+def test_mysql_and_postgresql_dialect_comments_cite_sqlalchemy_2_internals():
+    source = (_ROOT / "sqlalchemy_better_aurora_data_api" / "__init__.py").read_text()
+    mysql = source.split("class AuroraMySQLDataAPIDialect", 1)[1].split("class AuroraPostgresDataAPIDialect", 1)[0]
+    postgres = source.split("class AuroraPostgresDataAPIDialect", 1)[1].split("def register_dialects", 1)[0]
+    url = "https://docs.sqlalchemy.org/en/20/core/internals.html#sqlalchemy.engine.interfaces.Dialect"
+
+    assert url in mysql
+    assert url in postgres
+    assert "en/13/core/internals.html" not in mysql
+    assert "en/13/core/internals.html" not in postgres
+
+
+def test_mysql_live_example_executes_text():
+    source = (_ROOT / "test" / "test.py").read_text()
+    mysql = source.split("class TestAuroraDataAPIMySQLDialect", 1)[1]
+
+    assert 'conn.execute(text("select * from information_schema.tables"))' in mysql
+
+
+def test_ci_runs_offline_tests_without_a_sqlalchemy_version_matrix():
+    workflow = (_ROOT / ".github" / "workflows" / "ci.yml").read_text()
+
+    assert "uv run pytest test/test_offline.py" in workflow
+    assert _ci_test_job_matrix_axes() == ("python-version",)
+
+
 def test_classifiers_readme_label_and_ci_matrix_list_the_declared_python_versions():
     declared = ("3.11", "3.12", "3.13", "3.14", "3.15")
 
@@ -58,6 +156,11 @@ def _classifier_python_versions():
     )
 
 
+def _readme_section(heading):
+    rest = (_ROOT / "README.md").read_text().partition(heading)[2]
+    return rest.partition("\n## ")[0]
+
+
 def _readme_label_python_versions():
     lines = (_ROOT / "README.md").read_text().splitlines()
     title_index = next(index for index, line in enumerate(lines) if line.startswith("# "))
@@ -72,6 +175,36 @@ def _readme_label_python_versions():
     if alt_versions != message_versions:
         return ()
     return message_versions
+
+
+def _ci_test_job_matrix_axes():
+    axes = []
+    in_test_job = False
+    matrix_indent = None
+    for line in (_ROOT / ".github" / "workflows" / "ci.yml").read_text().splitlines():
+        if re.fullmatch(r"  [A-Za-z0-9_-]+:", line):
+            if in_test_job and matrix_indent is not None:
+                break
+            in_test_job = line == "  test:"
+            matrix_indent = None
+            continue
+        if not in_test_job:
+            continue
+        matrix_header = re.fullmatch(r"( +)matrix:", line)
+        if matrix_header and matrix_indent is None:
+            matrix_indent = len(matrix_header.group(1))
+            continue
+        if matrix_indent is None:
+            continue
+        key = re.fullmatch(r"( +)([A-Za-z0-9_-]+):.*", line)
+        if key is None:
+            continue
+        indent = len(key.group(1))
+        if indent <= matrix_indent:
+            break
+        if indent == matrix_indent + 2:
+            axes.append(key.group(2))
+    return tuple(axes)
 
 
 def _ci_test_matrix_python_versions():

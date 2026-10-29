@@ -142,7 +142,7 @@ class _ADA_ARRAY(ARRAY):
 
 
 class AuroraMySQLDataAPIDialect(MySQLDialect):
-    # See https://docs.sqlalchemy.org/en/13/core/internals.html#sqlalchemy.engine.interfaces.Dialect
+    # See https://docs.sqlalchemy.org/en/20/core/internals.html#sqlalchemy.engine.interfaces.Dialect
     driver = "aurora_data_api"
     default_schema_name = None
     supports_native_decimal = True
@@ -161,14 +161,14 @@ class AuroraMySQLDataAPIDialect(MySQLDialect):
         return aurora_data_api
 
     def _detect_charset(self, connection):
-        return connection.execute("SHOW VARIABLES LIKE 'character_set_client'").fetchone()[1]
+        return connection.exec_driver_sql("SHOW VARIABLES LIKE 'character_set_client'").fetchone()[1]
 
     def _extract_error_code(self, exception):
         return exception.args[0].value
 
 
 class AuroraPostgresDataAPIDialect(PGDialect):
-    # See https://docs.sqlalchemy.org/en/13/core/internals.html#sqlalchemy.engine.interfaces.Dialect
+    # See https://docs.sqlalchemy.org/en/20/core/internals.html#sqlalchemy.engine.interfaces.Dialect
     driver = "aurora_data_api"
     default_schema_name = None
     colspecs = util.update_copy(

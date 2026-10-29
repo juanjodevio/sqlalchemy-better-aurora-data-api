@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     "aurora-data-api>=0.5.0",
-    "sqlalchemy",
+    "sqlalchemy>=2,<3",
 ]
 
 [project.urls]
