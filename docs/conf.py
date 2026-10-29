@@ -2,7 +2,7 @@ import guzzle_sphinx_theme
 
 project = "sqlalchemy-better-aurora-data-api"
 copyright = "Andrey Kislyuk and CZI"
-author = "Andrey Kislyuk and juanjodevio"
+author = "juanjodevio"
 version = ""
 release = ""
 language = None
