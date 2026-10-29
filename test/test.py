@@ -15,16 +15,20 @@ from sqlalchemy import (
     Float,
     Integer,
     LargeBinary,
+    MetaData,
     Numeric,
     String,
+    Table,
     Text,
     Time,
     create_engine,
+    inspect,
 )
 
 # Enum,
 from sqlalchemy.dialects.postgresql import ARRAY, DATE, JSON, JSONB, TIME, TIMESTAMP, UUID
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.schema import CreateSchema, DropSchema
 from sqlalchemy.sql import text
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -249,6 +253,27 @@ class TestAuroraDataAPIPostgresDialect(TestAuroraDataAPI):
         # u2 =
         session2.query(User).filter(User.name.like("%ed")).first()
         print("FIXME: re-enable test for enums support", self.assertEqual, "u2.socks", Socks.green)
+
+    def test_postgresql_schema(self):
+        schema_name = "sqlalchemy_better_aurora_data_api_schema"
+        with self.engine.connect() as conn:
+            current = conn.exec_driver_sql("select current_schema()").scalar()
+            self.assertEqual(self.engine.dialect.default_schema_name, current)
+            self.assertNotEqual(schema_name, current)
+            conn.execute(DropSchema(schema_name, cascade=True, if_exists=True))
+            conn.execute(CreateSchema(schema_name))
+            table = Table(
+                "widget",
+                MetaData(),
+                Column("id", Integer, primary_key=True),
+                schema=schema_name,
+            )
+            table.create(conn)
+            self.assertTrue(inspect(conn).has_table("widget", schema=schema_name))
+            reflected = Table("widget", MetaData(), schema=schema_name, autoload_with=conn)
+            self.assertEqual(reflected.schema, schema_name)
+            conn.execute(DropSchema(schema_name, cascade=True))
+            conn.commit()
 
     @unittest.skipIf(sys.version_info < (3, 7), "Skipping test that requires Python 3.7+")
     def test_timestamp_microsecond_padding(self):
