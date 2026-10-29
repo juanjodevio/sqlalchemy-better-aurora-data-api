@@ -1,28 +1,30 @@
+import datetime
+import enum
+import logging
 import os
 import sys
 import unittest
-import logging
-import datetime
-import enum
-from uuid import UUID as uuid_type, uuid4
+from uuid import UUID as uuid_type
+from uuid import uuid4
 
 from sqlalchemy import (
-    create_engine,
-    Column,
-    Integer,
-    String,
     Boolean,
+    Column,
+    Date,
+    DateTime,
     Float,
+    Integer,
     LargeBinary,
     Numeric,
-    Date,
-    Time,
-    DateTime,
+    String,
     Text,
-    # Enum,
+    Time,
+    create_engine,
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB, JSON, DATE, TIME, TIMESTAMP, ARRAY
-from sqlalchemy.orm import sessionmaker, declarative_base
+
+# Enum,
+from sqlalchemy.dialects.postgresql import ARRAY, DATE, JSON, JSONB, TIME, TIMESTAMP, UUID
+from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.sql import text
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
