@@ -24,6 +24,10 @@ _Avoid_: resource, resourceArn, database ARN
 A named database inside a Cluster.
 _Avoid_: schema, catalog, cluster
 
+**PostgreSQL schema**:
+A namespace inside a Database.
+_Avoid_: Database
+
 **Secret**:
 The Secrets Manager object that holds the username and password used to enter a Cluster.
 _Avoid_: password, credentials, connection string
