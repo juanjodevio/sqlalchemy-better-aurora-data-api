@@ -3,9 +3,9 @@ import datetime
 from sqlalchemy import create_engine
 
 from sqlalchemy_better_aurora_data_api import (
+    _ADA_TIMESTAMP,
     AuroraMySQLDataAPIDialect,
     AuroraPostgresDataAPIDialect,
-    _ADA_TIMESTAMP,
 )
 
 
