@@ -24,7 +24,7 @@ _ROOT = Path(__file__).resolve().parents[1]
     ],
     ids=["PostgreSQL dialect", "MySQL dialect"],
 )
-def test_url_resolves_to_the_postgresql_dialect_and_the_mysql_dialect(url, dialect_class):
+def test_url_resolves_to_the_dialect(url, dialect_class):
     engine = create_engine(url)
 
     assert type(engine.dialect) is dialect_class
@@ -91,8 +91,18 @@ def _ci_test_matrix_python_versions():
             continue
         if not collecting:
             continue
-        version = re.fullmatch(r" +- [\"'](\d+\.\d+)[\"']", line)
-        if version is None:
+        stripped = line.strip()
+        if stripped == "" or stripped.startswith("#"):
+            continue
+        if not stripped.startswith("-"):
             break
-        versions.append(version.group(1))
+        payload = stripped[1:].strip()
+        version = re.fullmatch(
+            r"(?:\"(\d+\.\d+)\"|'(\d+\.\d+)'|(\d+\.\d+))\s*(?:#.*)?",
+            payload,
+        )
+        if version is None:
+            versions.append(payload)
+            continue
+        versions.append(next(group for group in version.groups() if group is not None))
     return tuple(versions)

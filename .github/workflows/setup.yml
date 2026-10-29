@@ -1,4 +1,4 @@
-name: Setup
+name: Install dependencies and run a command
 
 on:
   workflow_call:
