@@ -1,4 +1,4 @@
-# sqlalchemy-aurora-data-api - An AWS Aurora Serverless Data API dialect for SQLAlchemy
+# sqlalchemy-better-aurora-data-api - An AWS Aurora Serverless Data API dialect for SQLAlchemy
 
 ## Context
 
@@ -22,7 +22,7 @@ The Cluster ARN and the Secret ARN are passed beside the URL.
 ## Installation
 
 ```
-pip install sqlalchemy-aurora-data-api
+pip install sqlalchemy-better-aurora-data-api
 ```
 
 ## Prerequisites
@@ -115,24 +115,21 @@ logging.getLogger("aurora_data_api").setLevel(logging.DEBUG)
 
 ## Links
 
-* [Project home page (GitHub)](https://github.com/chanzuckerberg/sqlalchemy-aurora-data-api)
-* [Documentation (Read the Docs)](https://sqlalchemy-aurora-data-api.readthedocs.io/en/latest/)
-* [Package distribution (PyPI)](https://pypi.python.org/pypi/sqlalchemy-aurora-data-api)
+* [Project home page (GitHub)](https://github.com/juanjodevio/sqlalchemy-better-aurora-data-api)
+* [Package distribution (PyPI)](https://pypi.org/project/sqlalchemy-better-aurora-data-api/)
 * [Change log](CHANGES.md)
 * [aurora-data-api](https://github.com/chanzuckerberg/aurora-data-api), the Python DB-API 2.0 client that
-  sqlalchemy-aurora-data-api depends on
+  sqlalchemy-better-aurora-data-api depends on
+* [Original project](https://github.com/chanzuckerberg/sqlalchemy-aurora-data-api), sqlalchemy-aurora-data-api by Andrey Kislyuk
 
 ### Bugs
 
 Please report bugs, issues, feature requests, etc. on
-[GitHub](https://github.com/chanzuckerberg/sqlalchemy-aurora-data-api/issues).
+[GitHub](https://github.com/juanjodevio/sqlalchemy-better-aurora-data-api/issues).
 
 ## License
 
-Licensed under the terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
-
-[![Build status](https://travis-ci.org/chanzuckerberg/sqlalchemy-aurora-data-api.png)](https://travis-ci.org/chanzuckerberg/sqlalchemy-aurora-data-api)
-[![Coverage](https://codecov.io/github/chanzuckerberg/sqlalchemy-aurora-data-api/coverage.svg?branch=master)](https://codecov.io/github/chanzuckerberg/sqlalchemy-aurora-data-api?branch=master)
-[![PyPI version](https://img.shields.io/pypi/v/sqlalchemy-aurora-data-api.svg)](https://pypi.python.org/pypi/sqlalchemy-aurora-data-api)
-[![PyPI license](https://img.shields.io/pypi/l/sqlalchemy-aurora-data-api.svg)](https://pypi.python.org/pypi/sqlalchemy-aurora-data-api)
-[![Documentation status](https://readthedocs.org/projects/sqlalchemy-aurora-data-api/badge/?version=latest)](https://sqlalchemy-aurora-data-api.readthedocs.org/)
+sqlalchemy-better-aurora-data-api is a derivative of sqlalchemy-aurora-data-api
+by Andrey Kislyuk. Both are licensed under the
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+Copyright and attribution are in [NOTICE](NOTICE).

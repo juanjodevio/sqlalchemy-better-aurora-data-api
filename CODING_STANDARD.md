@@ -1,6 +1,6 @@
 > Adopted from the [Agent Framework Python coding standard](https://github.com/microsoft/agent-framework/blob/main/python/CODING_STANDARD.md).
 > Copyright (c) Microsoft Corporation. Used under the MIT License.
-> In this repository it applies to `sqlalchemy_aurora_data_api/`, `test/`, and Python tooling at the repository root.
+> In this repository it applies to `sqlalchemy_better_aurora_data_api/`, `test/`, and Python tooling at the repository root.
 
 # Python Coding Standards
 

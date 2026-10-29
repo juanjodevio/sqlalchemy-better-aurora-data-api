@@ -1,0 +1,15 @@
+sqlalchemy-better-aurora-data-api
+Copyright 2019 Andrey Kislyuk
+
+This product is a derivative work of sqlalchemy-aurora-data-api, written by
+Andrey Kislyuk and contributors and originally published at
+https://github.com/chanzuckerberg/sqlalchemy-aurora-data-api
+(later https://github.com/cloud-utils/sqlalchemy-aurora-data-api).
+
+The original documentation identified the copyright holder as CZI.
+
+This distribution is renamed sqlalchemy-better-aurora-data-api and is published
+from https://github.com/juanjodevio/sqlalchemy-better-aurora-data-api.
+It remains licensed under the Apache License, Version 2.0. See LICENSE.
+
+The dependency aurora-data-api is a separate work and is not part of this rename.

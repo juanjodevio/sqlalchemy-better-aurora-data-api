@@ -20,8 +20,8 @@ release:
 	@if ! type -P gh; then echo "Please install gh"; exit 1; fi
 	@if ! type -P twine; then echo "Please install twine"; exit 1; fi
 	git pull
-	git clean -x --force sqlalchemy_aurora_data_api
-	sed -i -e "s/^version = \"[0-9]*\.[0-9]*\.[0-9]*\"/version = \"$${TAG:1}\"/" pyproject.toml
+	git clean -x --force sqlalchemy_better_aurora_data_api
+	sed -i -e "s/^version = \"[0-9][^\"]*\"/version = \"$${TAG:1}\"/" pyproject.toml
 	uv lock
 	git add pyproject.toml uv.lock
 	TAG_MSG=$$(mktemp); \
