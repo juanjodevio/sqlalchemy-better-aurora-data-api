@@ -46,11 +46,11 @@ def test_mysql_dialect_charset_probe_returns_the_client_charset():
             self.sql = sql
             row = ("character_set_client", "utf8mb4")
 
-            class _Row:
+            class _Result:
                 def fetchone(self):
                     return row
 
-            return _Row()
+            return _Result()
 
     connection = _StandInConnection()
 
@@ -91,17 +91,13 @@ def test_package_depends_on_sqlalchemy_2_and_the_lock_resolves_2_1_6():
 
 
 def test_readme_prerequisites_require_sqlalchemy_2():
-    readme = (_ROOT / "README.md").read_text()
-    _before, _marker, rest = readme.partition("## Prerequisites")
-    section, _next_marker, _after = rest.partition("\n## ")
+    section = _readme_section("## Prerequisites")
 
     assert "This package requires SQLAlchemy >= 2 and < 3." in section
 
 
 def test_readme_quickstart_imports_text_and_executes_it():
-    readme = (_ROOT / "README.md").read_text()
-    _before, _marker, rest = readme.partition("## Usage")
-    section, _next_marker, _after = rest.partition("\n## ")
+    section = _readme_section("## Usage")
 
     assert "from sqlalchemy import create_engine, text" in section
     assert 'conn.execute(text("select * from pg_catalog.pg_tables"))' in section
@@ -136,7 +132,7 @@ def test_ci_runs_offline_tests_without_a_sqlalchemy_version_matrix():
     workflow = (_ROOT / ".github" / "workflows" / "ci.yml").read_text()
 
     assert "uv run pytest test/test_offline.py" in workflow
-    assert "sqlalchemy" not in workflow
+    assert _ci_test_job_matrix_axes() == ("python-version",)
 
 def test_classifiers_readme_label_and_ci_matrix_list_the_declared_python_versions():
     declared = ("3.11", "3.12", "3.13", "3.14", "3.15")
@@ -159,6 +155,11 @@ def _classifier_python_versions():
     )
 
 
+def _readme_section(heading):
+    rest = (_ROOT / "README.md").read_text().partition(heading)[2]
+    return rest.partition("\n## ")[0]
+
+
 def _readme_label_python_versions():
     lines = (_ROOT / "README.md").read_text().splitlines()
     title_index = next(index for index, line in enumerate(lines) if line.startswith("# "))
@@ -173,6 +174,36 @@ def _readme_label_python_versions():
     if alt_versions != message_versions:
         return ()
     return message_versions
+
+
+def _ci_test_job_matrix_axes():
+    axes = []
+    in_test_job = False
+    matrix_indent = None
+    for line in (_ROOT / ".github" / "workflows" / "ci.yml").read_text().splitlines():
+        if re.fullmatch(r"  [A-Za-z0-9_-]+:", line):
+            if in_test_job and matrix_indent is not None:
+                break
+            in_test_job = line == "  test:"
+            matrix_indent = None
+            continue
+        if not in_test_job:
+            continue
+        matrix_header = re.fullmatch(r"( +)matrix:", line)
+        if matrix_header and matrix_indent is None:
+            matrix_indent = len(matrix_header.group(1))
+            continue
+        if matrix_indent is None:
+            continue
+        key = re.fullmatch(r"( +)([A-Za-z0-9_-]+):.*", line)
+        if key is None:
+            continue
+        indent = len(key.group(1))
+        if indent <= matrix_indent:
+            break
+        if indent == matrix_indent + 2:
+            axes.append(key.group(2))
+    return tuple(axes)
 
 
 def _ci_test_matrix_python_versions():
