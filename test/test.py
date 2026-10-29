@@ -254,7 +254,7 @@ class TestAuroraDataAPIPostgresDialect(TestAuroraDataAPI):
         session2.query(User).filter(User.name.like("%ed")).first()
         print("FIXME: re-enable test for enums support", self.assertEqual, "u2.socks", Socks.green)
 
-    def test_postgresql_schema(self):
+    def test_postgresql_schema(self) -> None:
         schema_name = "sqlalchemy_better_aurora_data_api_schema"
         with self.engine.connect() as conn:
             current = conn.exec_driver_sql("select current_schema()").scalar()

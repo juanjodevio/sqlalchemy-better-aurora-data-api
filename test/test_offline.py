@@ -32,7 +32,7 @@ def test_url_resolves_to_the_dialect(url, dialect_class):
     assert engine.dialect.driver == "aurora_data_api"
 
 
-def test_postgresql_schema_name_is_compiled_into_the_sql():
+def test_postgresql_schema_name_is_compiled_into_the_sql() -> None:
     engine = create_engine("postgresql+auroradataapi://:@/offline")
     dialect = engine.dialect
     on_table = Table("widgets", MetaData(), Column("id", Integer, primary_key=True), schema="app")
@@ -62,7 +62,7 @@ def test_postgresql_schema_name_is_compiled_into_the_sql():
     assert "search_path" not in select_on_table
 
 
-def test_readme_states_the_postgresql_schema_contract():
+def test_readme_states_the_postgresql_schema_contract() -> None:
     readme = (_ROOT / "README.md").read_text()
 
     assert "A PostgreSQL schema is a namespace inside a Database." in readme
