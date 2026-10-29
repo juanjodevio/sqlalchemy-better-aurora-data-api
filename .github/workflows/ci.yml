@@ -1,18 +1,51 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "**"
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   ruff:
-    runs-on: ubuntu-22.04
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: ruff check
-        uses: chartboost/ruff-action@v1
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
-          version: 0.1.9
-      - name: ruff format
-        uses: chartboost/ruff-action@v1
+          python-version: "3.15"
+      - run: uv python install 3.15
+      - run: uv sync --frozen
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+
+  test:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+          - "3.15"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
-          version: 0.1.9
-          args: format --check
+          python-version: ${{ matrix.python-version }}
+      - run: uv python install ${{ matrix.python-version }}
+      - run: uv sync --frozen
+      - run: uv run pytest test/test_offline.py
