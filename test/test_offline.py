@@ -5,7 +5,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
-from sqlalchemy import Column, Enum, create_engine
+from sqlalchemy import Column, Enum, Integer, MetaData, Table, create_engine, select
+from sqlalchemy.schema import CreateTable
 
 from sqlalchemy_better_aurora_data_api import (
     _ADA_TIMESTAMP,
@@ -29,6 +30,44 @@ def test_url_resolves_to_the_dialect(url, dialect_class):
 
     assert type(engine.dialect) is dialect_class
     assert engine.dialect.driver == "aurora_data_api"
+
+
+def test_postgresql_schema_name_is_compiled_into_the_sql() -> None:
+    engine = create_engine("postgresql+auroradataapi://:@/offline")
+    dialect = engine.dialect
+    on_table = Table("widgets", MetaData(), Column("id", Integer, primary_key=True), schema="app")
+    on_metadata = Table("widgets", MetaData(schema="app"), Column("id", Integer, primary_key=True))
+    quoted = Table("Widgets", MetaData(), Column("id", Integer, primary_key=True), schema="App")
+    bare = Table("widgets", MetaData(), Column("id", Integer, primary_key=True))
+
+    create_on_table = str(CreateTable(on_table).compile(dialect=dialect))
+    select_on_table = str(select(on_table).compile(dialect=dialect))
+    create_on_metadata = str(CreateTable(on_metadata).compile(dialect=dialect))
+    select_on_metadata = str(select(on_metadata).compile(dialect=dialect))
+    create_quoted = str(CreateTable(quoted).compile(dialect=dialect))
+    select_quoted = str(select(quoted).compile(dialect=dialect))
+    create_bare = str(CreateTable(bare).compile(dialect=dialect))
+    select_bare = str(select(bare).compile(dialect=dialect))
+
+    assert "CREATE TABLE app.widgets" in create_on_table
+    assert "FROM app.widgets" in select_on_table
+    assert "CREATE TABLE app.widgets" in create_on_metadata
+    assert "FROM app.widgets" in select_on_metadata
+    assert 'CREATE TABLE "App"."Widgets"' in create_quoted
+    assert 'FROM "App"."Widgets"' in select_quoted
+    assert "CREATE TABLE widgets (" in create_bare
+    assert "app." not in create_bare
+    assert "FROM widgets" in select_bare
+    assert "search_path" not in create_on_table
+    assert "search_path" not in select_on_table
+
+
+def test_readme_states_the_postgresql_schema_contract() -> None:
+    readme = (_ROOT / "README.md").read_text()
+
+    assert "A PostgreSQL schema is a namespace inside a Database." in readme
+    assert "Set it on the table or the metadata." in readme
+    assert "The URL path remains the Database." in readme
 
 
 def test_timestamp_microsecond_padding():

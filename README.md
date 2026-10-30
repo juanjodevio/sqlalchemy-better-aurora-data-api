@@ -21,6 +21,9 @@ A connection names three things:
 The dialect and the Database name are the only parts of the connection URL that select a target.
 The Cluster ARN and the Secret ARN are passed beside the URL.
 
+A PostgreSQL schema is a namespace inside a Database. Set it on the table or the metadata.
+The URL path remains the Database.
+
 ## Installation
 
 ```
